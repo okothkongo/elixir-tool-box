@@ -23,12 +23,17 @@ jobs:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
+
     - name: Install dependencies
       if: steps.mix-cache.outputs.cache-hit != 'true'
       run: |
         mix local.rebar --force
         mix local.hex --force
         mix deps.get
+
+    - name: Setup db
+      run: mix ecto.setup
+      
     - name: Check lint
       run: mix check_lint
     - name: Run tests
